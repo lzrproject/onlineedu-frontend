@@ -31,6 +31,16 @@ export default {
     return {
       selectionValue: null,
       subjectData: [],
+      subjectDataOther: [
+        {
+          id: 'activity',
+          title: '活动浏览'
+        },
+        {
+          id: 'article',
+          title: '博客浏览'
+        },
+      ],
       bannerData: []
     }
   },
@@ -41,17 +51,25 @@ export default {
   methods: {
     selected(val) {
       const arr = val
+      console.log(arr)
+      
       if (!!arr || arr.length > 0) {
         const subjectId = arr[arr.length - 1]
-        // const { href } = this.$router.resolve({
-        //   name: 'SearchBySubject',
-        //   params: { subject: subjectId }
-        // })
-        // window.open(href, '_blank')
-        this.$router.push({
-          name: 'SearchBySubject',
-          params: { subject: subjectId }
-        })
+        if (subjectId === 'activity') {
+          this.$router.push('/activity')
+        }else if (subjectId === 'article') {
+          this.$router.push('/article')
+        }else {
+          // const { href } = this.$router.resolve({
+          //   name: 'SearchBySubject',
+          //   params: { subject: subjectId }
+          // })
+          // window.open(href, '_blank')
+          this.$router.push({
+            name: 'SearchBySubject',
+            params: { subject: subjectId }
+          })
+        }
       }
     },
     encodeOssFileUri(ossUri) {
@@ -59,7 +77,12 @@ export default {
     },
     getSubjects() {
       getSubjects().then(resp => {
-        this.subjectData = resp.data
+        if (resp.data) {
+          this.subjectData = resp.data
+        }
+        this.subjectDataOther.forEach(v => {
+          this.subjectData.push(v)
+        })
       })
     },
     getBanners() {

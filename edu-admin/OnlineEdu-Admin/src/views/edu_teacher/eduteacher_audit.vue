@@ -106,10 +106,10 @@
     >
       <div style="height: 80vh;overflow: auto">
         <div style="margin-bottom: 20px">
-          <el-link :underline="false" :href="listData[currentOperationIndex].resume" target="_blank">
+          <!-- <el-link :underline="false" :href="listData[currentOperationIndex].resume" target="_blank">
             <i class="el-icon-link" />
             在浏览器新标签打开
-          </el-link>
+          </el-link> -->
         </div>
         <div v-if="isPdf">
           <pdf

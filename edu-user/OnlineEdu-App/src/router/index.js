@@ -64,6 +64,27 @@ export default new Router({
           name: 'SearchByTeacher',
           meta: { title: '讲师' },
           component: () => import('@/views/search_teacher')
+        },
+        // 活动浏览
+        {
+          path: '/activity',
+          name: 'SearchByActivity',
+          meta: { title: '活动浏览' },
+          component: () => import('@/views/menu/search_activity')
+        },
+        // 活动详情页面
+        {
+          path: '/activity/item/:id',
+          name: 'ActivityItem',
+          meta: { title: '活动详情' },
+          component: () => import('@/views/menu/activity_item')
+        },
+        // 博客浏览
+        {
+          path: '/article',
+          name: 'SearchByArticle',
+          meta: { title: '博客浏览' },
+          component: () => import('@/views/menu/search_article')
         }
       ]
     },
