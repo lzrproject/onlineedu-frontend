@@ -85,7 +85,14 @@ export default new Router({
           name: 'SearchByArticle',
           meta: { title: '博客浏览' },
           component: () => import('@/views/menu/search_article')
-        }
+        },
+        // 博客详情页面
+        {
+          path: '/article/item/:id',
+          name: 'ArticleItem',
+          meta: { title: '博客详情' },
+          component: () => import('@/views/menu/article_item')
+        },
       ]
     },
     // 用户中心

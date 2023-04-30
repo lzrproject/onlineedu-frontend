@@ -11,6 +11,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.30.1",
     "element-ui": "^2.14.1",
+    "mavon-editor": "^2.10.4",
     "mv-count-down": "^0.1.15",
     "nprogress": "^0.2.0",
     "vue": "^2.6.11",

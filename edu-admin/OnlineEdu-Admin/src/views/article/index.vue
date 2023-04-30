@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="small"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+    >
       <el-form-item label="文章标题" prop="title">
         <el-input
           v-model="queryParams.title"
@@ -9,49 +16,23 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="图片1" prop="img1">
-        <el-input
-          v-model="queryParams.img1"
-          placeholder="请输入图片1"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="图片2" prop="img2">
-        <el-input
-          v-model="queryParams.img2"
-          placeholder="请输入图片2"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="图片3" prop="img3">
-        <el-input
-          v-model="queryParams.img3"
-          placeholder="请输入图片3"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="创建用户的id" prop="createUser">
-        <el-input
-          v-model="queryParams.createUser"
-          placeholder="请输入创建用户的id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否启用" prop="enable">
-        <el-input
-          v-model="queryParams.enable"
-          placeholder="请输入是否启用"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="是否发布" prop="enable">
+        <el-select v-model="queryParams.enable" placeholder="请选择状态" clearable>
+          <el-option label="已发布" value="1"> </el-option>
+          <el-option label="已下线" value="0"> </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -63,8 +44,8 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:article:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -74,8 +55,8 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:article:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -85,83 +66,114 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:article:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:article:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="articleList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="文章标题" align="center" prop="title" />
-      <el-table-column label="内容" align="center" prop="content" />
+      <el-table-column
+        label="文章标题"
+        align="center"
+        prop="title"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="内容"
+        align="center"
+        prop="content"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="文章描述"
+        align="center"
+        prop="articleDesc"
+        show-overflow-tooltip
+      />
       <el-table-column label="图片1" align="center" prop="img1" />
       <el-table-column label="图片2" align="center" prop="img2" />
       <el-table-column label="图片3" align="center" prop="img3" />
-      <el-table-column label="创建用户的id" align="center" prop="createUser" />
-      <el-table-column label="是否启用" align="center" prop="enable" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="创建用户" align="center" prop="userName" />
+      <el-table-column label="是否启用" align="center" prop="enable">
+        <template slot-scope="scope">
+          <el-tooltip
+            :content="
+              '文章发布状态: ' + (scope.row.enable == 0 ? '关闭' : '开启')
+            "
+            placement="top"
+          >
+            <el-switch
+              v-model="scope.row.enable"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleSwitch"
+            >
+            </el-switch>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:article:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:article:remove']"
-          >删除</el-button>
+            >修改</el-button
+          >
+          <el-popconfirm
+            title="确定删除当前数据吗？"
+            @confirm="handleDelete(scope.row)"
+          >
+            <el-button
+              slot="reference"
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              >删除</el-button
+            >
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
-      :page.sync="queryParams.pageNum"
+      :page.sync="queryParams.current"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
 
     <!-- 添加或修改【请填写功能名称】对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog
+      :title="title"
+      :visible.sync="open"
+      width="1100px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="文章标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入文章标题" />
         </el-form-item>
+        <el-form-item label="文章描述">
+          <el-input type="textarea" v-model="form.articleDesc"></el-input>
+        </el-form-item>
         <el-form-item label="内容">
-          <editor v-model="form.content" :min-height="192"/>
-        </el-form-item>
-        <el-form-item label="图片1" prop="img1">
-          <el-input v-model="form.img1" placeholder="请输入图片1" />
-        </el-form-item>
-        <el-form-item label="图片2" prop="img2">
-          <el-input v-model="form.img2" placeholder="请输入图片2" />
-        </el-form-item>
-        <el-form-item label="图片3" prop="img3">
-          <el-input v-model="form.img3" placeholder="请输入图片3" />
-        </el-form-item>
-        <el-form-item label="创建用户的id" prop="createUser">
-          <el-input v-model="form.createUser" placeholder="请输入创建用户的id" />
-        </el-form-item>
-        <el-form-item label="是否启用" prop="enable">
-          <el-input v-model="form.enable" placeholder="请输入是否启用" />
+          <mavon-editor ref="md" v-model="form.content" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -173,7 +185,16 @@
 </template>
 
 <script>
-import { listArticle, getArticle, delArticle, addArticle, updateArticle } from "@/api/article";
+import {
+  listArticle,
+  getArticle,
+  delArticle,
+  addArticle,
+  updateArticle,
+  listuserArticle,
+  disable,
+  enable,
+} from "@/api/article";
 
 export default {
   name: "Article",
@@ -199,7 +220,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        pageNum: 1,
+        current: 1,
         pageSize: 10,
         title: null,
         content: null,
@@ -207,13 +228,12 @@ export default {
         img2: null,
         img3: null,
         createUser: null,
-        enable: null
+        enable: null,
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
     };
   },
   created() {
@@ -223,15 +243,28 @@ export default {
     /** 查询【请填写功能名称】列表 */
     getList() {
       this.loading = true;
-      setTimeout(() => {
-        this.articleList = [];
-        this.loading = false;
-      }, 1000);
-      // listArticle(this.queryParams).then(response => {
-      //   this.articleList = response.rows;
-      //   this.total = response.total;
+      // setTimeout(() => {
+      //   this.articleList = [
+      //     {
+      //       title: 1,
+      //       content: 1,
+      //       img1: null,
+      //       img2: null,
+      //       img3: null,
+      //       createUser: 1,
+      //       enable: 1,
+      //     }
+      //   ];
       //   this.loading = false;
-      // });
+      // }, 1000);
+
+
+      listuserArticle(this.queryParams).then((response) => {
+        this.articleList = response.data.records;
+        this.total = response.data.total;
+        this.loading = false;
+        console.log()
+      });
     },
     // 取消按钮
     cancel() {
@@ -243,14 +276,15 @@ export default {
       this.form = {
         id: null,
         title: null,
-        content: null,
+        content: "",
+        articleDesc: null,
         img1: null,
         img2: null,
         img3: null,
         createUser: null,
         createTime: null,
         updateTime: null,
-        enable: null
+        enable: null,
       };
       this.resetForm("form");
     },
@@ -266,39 +300,39 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加【请填写功能名称】";
+      this.title = "添加博客";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getArticle(id).then(response => {
+      const id = row.id || this.ids;
+      getArticle(id).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改【请填写功能名称】";
+        this.title = "修改博客";
       });
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != null) {
-            updateArticle(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
+            updateArticle(this.form).then((response) => {
+              this.$message.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addArticle(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
+            addArticle(this.form).then((response) => {
+              this.$message.success("新增成功");
               this.open = false;
               this.getList();
             });
@@ -309,19 +343,24 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function() {
-        return delArticle(ids);
-      }).then(() => {
+      delArticle(ids).then((response) => {
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.$message.success("删除成功");
+      });
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/article/export', {
-        ...this.queryParams
-      }, `article_${new Date().getTime()}.xlsx`)
-    }
-  }
+    handleSwitch(val) {
+      if (val == 1) {
+        enable(val).then((response) => {
+          this.$message.success("发布成功");
+          this.getList()
+        });
+      } else {
+        disable(val).then((response) => {
+          this.$message.success("下线成功");
+          this.getList()
+        });
+      }
+    },
+  },
 };
 </script>

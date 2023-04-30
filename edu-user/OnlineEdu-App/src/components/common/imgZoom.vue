@@ -9,20 +9,10 @@
       @mouseout="flag = false"
     >
       <img :src="currentImg" />
-      <div class="big_img_box" ref="big" v-show="flag">
-        <img
-          ref="bigimg"
-          :src="currentImg"
-          :style="{'left':imgX + 'px','top':imgY + 'px',}"
-          alt
-        />
+      <div class="big_img_box" v-show="flag">
+        <img ref="big" :src="currentImg" alt />
       </div>
-      <div
-        ref="mask"
-        class="mark"
-        :style="{'left':left + 'px','top':top + 'px',}"
-        v-show="flag"
-      ></div>
+      <div ref="mask" class="mask" v-show="flag"></div>
     </div>
     <!-- 底部五张小图 -->
     <div class="img_btns">
@@ -37,7 +27,6 @@
   </div>
 </template>
 <script>
-
 export default {
   name: "ImgZoom",
   props: ["imgs"],
@@ -45,71 +34,31 @@ export default {
     return {
       currentImg: this.imgs[0],
       flag: false,
-      top:'',
-      left:'',
-      imgX:'',
-      imgY:'',
+      // 放大镜图坐标
+      left: 0,
+      top: 0,
+      // 遮罩层坐标
+      l: 0,
+      t: 0,
     };
   },
   methods: {
     move(e) {
-      let small = this.$refs.img_box
-      let mask = this.$refs.mask
-      let big = this.$refs.big
-      let bigimg = this.$refs.bigimg
-
-      // 大图相对于网页左上角的坐标
-      var ot = small.offsetTop;
-      var ol = small.offsetLeft;
-      // 获取鼠标中点位置
-      let maskX =  e.pageX - ol
-      let maskY = e.pageY - ot
-
-      // 让鼠标出现在mask的中心点
-      maskX = maskX - mask.offsetWidth / 2;
-      maskY = maskY - mask.offsetHeight / 2;
-
-      // 把mask限制到box中
-      maskX = maskX < 0 ? 0 : maskX;
-      maskY = maskY < 0 ? 0 : maskY;
-
-      maskX = maskX > small.offsetWidth - mask.offsetWidth ? small.offsetWidth - mask.offsetWidth : maskX;
-      maskY = maskY > small.offsetHeight - mask.offsetHeight ? small.offsetHeight - mask.offsetHeight : maskY;
-
-      let bigImgX = maskX * (big.offsetWidth - bigimg.offsetWidth) / (small.offsetWidth - mask.offsetWidth);
-      let bigImgY = maskY * (big.offsetHeight - bigimg.offsetHeight) / (small.offsetHeight - mask.offsetHeight)
-
-      this.left = maskX
-      this.top = maskY
-      this.imgX = bigImgX
-      this.imgY = bigImgY
-
-
-      // // 鼠标相对于网页左上角的坐标
-      // var x = e.pageX/2;
-      // var y = e.pageY/2;
-      // // 大图相对于网页左上角的坐标
-      // var ot = this.$refs.img_box.offsetTop;
-      // var ol = this.$refs.img_box.offsetLeft;
-      // // 计算鼠标相对于大图左上角的坐标
-      // x -= ol;
-      // y -= ot;
-      // // 限制鼠标相对于大图的坐标变化范围
-      // x = x < 130 ? 130 : x;
-      // x = x > 270 ? 270 : x;
-      // y = y < 130 ? 130 : y;
-      // y = y > 270 ? 270 : y;
-      // // 在这个范围内,让遮罩层跟随鼠标移动
-      // this.l = x - 130;
-      // this.t = y - 130;
-      // // 计算放大镜图片坐标
-      // // 左侧图片移动范围 270 - 130 = 140
-      // // 右侧大图移动范围 760 - 480 = 280
-      // // 得出: 右侧大图和左侧小图移动的坐标比例关系  280 / 140 = 2
-      // // this.left = -(x - 130) * 2;
-      // // this.top = -(y - 130) * 2
-      // this.left = -2 * x + 260;
-      // this.top = -2 * y + 260;
+      // console.log(123)
+      let mask = this.$refs.mask; //获取遮罩层这个元素
+      let big = this.$refs.big; //获取大图的这个元素
+      let left = e.offsetX - mask.offsetWidth / 2; //offsetWidth/2遮罩层宽度的一半,offsetX是从遮罩层的中心开始算的
+      let top = e.offsetY - mask.offsetHeight / 2; //距离顶部的距离
+      //约束范围
+      if (left <= 0) left = 0; //约束最小的距离左边的距离不能小于0
+      if (left >= mask.offsetWidth) left = mask.offsetWidth; //约束最大的距离left不能大于一个遮罩层的宽度,因为刚好两个遮罩层等于容器的宽度
+      if (top <= 0) top = 0;
+      if (top >= mask.offsetHeight) top = mask.offsetHeight;
+      //修改元素的left|top属性值
+      mask.style.left = left + "px";
+      mask.style.top = top + "px";
+      big.style.left = -2 * left + "px";
+      big.style.top = -2 * top + "px";
     },
   },
   watch: {
@@ -159,7 +108,7 @@ export default {
   border-radius: 10px;
 }
 
-.mark {
+.mask {
   width: 160px;
   height: 160px;
   position: absolute;

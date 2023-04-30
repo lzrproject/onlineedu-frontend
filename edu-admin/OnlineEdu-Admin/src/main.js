@@ -17,9 +17,22 @@ import '@/permission' // permission control
 import '@/plugins/vcharts' // echarts
 
 import Verify from '@/components/verify'
-
+import { download } from '@/utils/request'
+import Pagination from "@/components/Pagination";
+import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+Vue.prototype.parseTime = parseTime
+Vue.prototype.resetForm = resetForm
+Vue.prototype.addDateRange = addDateRange
+Vue.prototype.selectDictLabel = selectDictLabel
+Vue.prototype.selectDictLabels = selectDictLabels
+Vue.prototype.download = download
+Vue.prototype.handleTree = handleTree
+Vue.component('Pagination', Pagination)
 Vue.use(ElementUI)
 
+Vue.use(mavonEditor)
 // 验证码
 Vue.prototype.$verify = Verify
 
