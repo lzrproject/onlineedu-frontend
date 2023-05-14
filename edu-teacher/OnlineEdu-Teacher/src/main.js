@@ -18,6 +18,17 @@ import '@/plugins/vcharts' // echarts
 import '@/plugins/vue-clipboard2.js' // vue-clipboard2.js
 
 import Verify from '@/components/verify'
+import { download } from '@/utils/request'
+import Pagination from "@/components/Pagination";
+import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
+Vue.prototype.parseTime = parseTime
+Vue.prototype.resetForm = resetForm
+Vue.prototype.addDateRange = addDateRange
+Vue.prototype.selectDictLabel = selectDictLabel
+Vue.prototype.selectDictLabels = selectDictLabels
+Vue.prototype.download = download
+Vue.prototype.handleTree = handleTree
+Vue.component('Pagination', Pagination)
 // 验证码
 Vue.prototype.$verify = Verify
 

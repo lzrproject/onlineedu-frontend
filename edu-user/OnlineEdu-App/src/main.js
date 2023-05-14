@@ -16,6 +16,8 @@ import Verify from '@/components/verify'
 import Login from '@/components/common/globalLogin'
 import { Message, Notification } from 'element-ui'
 
+
+
 Vue.use(ElementUI)
 
 // 验证码

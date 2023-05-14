@@ -132,7 +132,37 @@ export const constantRoutes = [
     }]
   },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/404', hidden: true },
+  // 活动管理
+  {
+    path: '/activity',
+    component: Layout,
+    name: 'Activity',
+    meta: { title: '活动管理', icon: 'el-icon-s-order' },
+    children: [
+      {
+        path: 'list',
+        name: 'activityList',
+        component: () => import('@/views/activity/index'),
+        meta: { title: '活动管理', icon: 'el-icon-s-order' }
+      }
+    ]
+  },
+  // 博客管理
+  {
+    path: '/blog',
+    component: Layout,
+    name: 'Blog',
+    meta: { title: '博客管理', icon: 'el-icon-s-order' },
+    children: [
+      {
+        path: 'list',
+        name: 'blogList',
+        component: () => import('@/views/article/index'),
+        meta: { title: '博客管理', icon: 'el-icon-s-order' }
+      }
+    ]
+  }
 ]
 
 const createRouter = () => new Router({

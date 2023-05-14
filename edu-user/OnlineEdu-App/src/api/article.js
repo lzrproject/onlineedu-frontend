@@ -27,3 +27,20 @@ export function getArticle(id){
       method: 'get'
   })
 }
+
+//根据博客id获取评论
+export function getCommentByBid(articleId){
+  return request({
+      url: `${api_prefix}/comment/${articleId}`,
+      method: 'get'
+  })
+}
+
+//新增评论
+export function addComment(data){
+  return request({
+      url: `${api_prefix}/add`,
+      method: 'post',
+      data: data
+  })
+}

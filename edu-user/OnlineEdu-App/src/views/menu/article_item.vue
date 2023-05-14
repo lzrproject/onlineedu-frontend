@@ -4,12 +4,10 @@
       <el-col :span="20">
         <el-breadcrumb
           separator-class="el-icon-arrow-right"
-          style="margin: 30px 0; color: #333;"
+          style="margin: 30px 0; color: #333"
         >
           <el-breadcrumb-item :to="'/'">全部课程</el-breadcrumb-item>
-          <el-breadcrumb-item :to="'/article'"> 
-              博客浏览 
-          </el-breadcrumb-item>
+          <el-breadcrumb-item :to="'/article'"> 博客浏览 </el-breadcrumb-item>
           <el-breadcrumb-item> 查看文章 </el-breadcrumb-item>
         </el-breadcrumb>
       </el-col>
@@ -51,6 +49,48 @@
               >
               </el-alert>
             </div>
+            <div class="me-view-comment">
+              <div class="me-view-comment-write">
+                <el-row :gutter="20">
+                  <el-col :span="2">
+                    <a class="">
+                      <img class="me-view-picture" />
+                    </a>
+                  </el-col>
+                  <el-col :span="22">
+                    <el-input
+                      type="textarea"
+                      :autosize="{ minRows: 2 }"
+                      placeholder="你的评论..."
+                      class="me-view-comment-text"
+                      v-model="comment.content"
+                      resize="none"
+                    >
+                    </el-input>
+                  </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                  <el-col :span="2" :offset="22">
+                    <el-button type="text" @click="publishComment()"
+                      >评论</el-button
+                    >
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="me-view-comment-title">
+                <span>{{ article.commentCounts }} 条评论</span>
+              </div>
+              <CommmentItem
+                v-for="(c, index) in comments"
+                :comment="c"
+                :articleId="articleId"
+                :index="index"
+                :rootCommentCounts="comments.length"
+                @commentCountsIncrement="commentCountsIncrement"
+                :key="c.id"
+              />
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -59,20 +99,19 @@
 </template>
 <script>
 import MarkdownEditor from "@/views/menu/MarkdownEditor";
-import { getArticle } from "@/api/article";
-// import { getCommentsByArticle, publishComment } from '@/api/comment'
-
+import { getArticle, getCommentByBid, addComment } from "@/api/article";
+import CommmentItem from '@/components/article/CommentItem'
 import default_avatar from "@/assets/img/default_avatar.png";
 
 export default {
   name: "BlogView",
   components: {
     MarkdownEditor,
+    CommmentItem
   },
   data() {
     return {
       article: {
-        id: "",
         title: "",
         commentCounts: 188,
         viewCounts: 66,
@@ -91,7 +130,6 @@ export default {
       articleId: "",
       comments: [],
       comment: {
-        article: {},
         content: "",
       },
     };
@@ -109,7 +147,7 @@ export default {
     },
   },
   mounted() {
-    this.articleId = this.$route.params.id;
+    this.articleId = parseInt(this.$route.params.id);
     this.getArticle();
   },
   watch: {
@@ -118,9 +156,6 @@ export default {
   methods: {
     tagOrCategory(type, id) {
       this.$router.push({ path: `/${type}/${id}` });
-    },
-    editArticle() {
-      this.$router.push({ path: `/write/${this.article.id}` });
     },
     getArticle() {
       getArticle(this.articleId)
@@ -137,34 +172,35 @@ export default {
             });
           }
         });
+        this.getCommentsByArticle()
     },
     publishComment() {
-      let that = this;
-      if (!that.comment.content) {
+      if (!this.comment.content) {
         return;
       }
-      that.comment.article.id = that.article.id;
+      this.comment.articleId = this.articleId;
 
-      // publishComment(that.comment).then(data => {
-      //   that.$message({type: 'success', message: '评论成功', showClose: true})
-      //   that.comments.unshift(data.data)
-      //   that.commentCountsIncrement()
-      //   that.comment.content = ''
-      // }).catch(error => {
-      //   if (error !== 'error') {
-      //     that.$message({type: 'error', message: '评论失败', showClose: true})
-      //   }
-      // })
+      addComment(this.comment).then(data => {
+        this.$message({type: 'success', message: '评论成功', showClose: true})
+        this.comments.unshift(data.data)
+        this.commentCountsIncrement()
+        this.comment.content = ''
+        // this.getCommentsByArticle()
+      }).catch(error => {
+        if (error !== 'error') {
+          this.$message({type: 'error', message: '评论失败', showClose: true})
+        }
+      })
     },
     getCommentsByArticle() {
-      let that = this;
-      // getCommentsByArticle(that.article.id).then(data => {
-      //   that.comments = data.data
-      // }).catch(error => {
-      //   if (error !== 'error') {
-      //     that.$message({type: 'error', message: '评论加载失败', showClose: true})
-      //   }
-      // })
+      getCommentByBid(this.articleId).then(data => {
+        this.comments = data.data
+        this.article.commentCounts = data.data.length
+      }).catch(error => {
+        if (error !== 'error') {
+          that.$message({type: 'error', message: '评论加载失败', showClose: true})
+        }
+      })
     },
     commentCountsIncrement() {
       this.article.commentCounts += 1;
@@ -187,7 +223,7 @@ export default {
 }
 
 .me-view-container {
-  width: 800px;
+  width: 1000px;
   margin: 0 auto;
 }
 
@@ -207,7 +243,7 @@ export default {
   vertical-align: middle;
 }
 
-.me-view-content{
+.me-view-content {
   margin-top: 20px;
 }
 
